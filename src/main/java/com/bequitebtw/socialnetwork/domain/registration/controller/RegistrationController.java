@@ -8,9 +8,11 @@ import com.bequitebtw.socialnetwork.domain.registration.service.UserRegistration
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.UUID;
 
 @RestController
@@ -27,7 +29,7 @@ public class RegistrationController {
 
 	@GetMapping("/confirm")
 	public ResponseEntity<ApiResponse<UserRegistrationResponse>> confirmAccount(@RequestParam("token") String tokenValue, HttpServletRequest request) {
-		return responseBuilder.ok(userRegistrationService.confirmAccount(tokenValue), "Аккаунт подтвержден!", request.getRequestURI());
+		return responseBuilder.success(HttpStatus.FOUND, userRegistrationService.confirmAccount(tokenValue), "Аккаунт подтвержден!", request.getRequestURI(), URI.create("/login"));
 	}
 
 	@PostMapping("/{registrationId}/resend")

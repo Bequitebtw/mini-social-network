@@ -1,6 +1,7 @@
 package com.bequitebtw.socialnetwork.security;
 
 import com.bequitebtw.socialnetwork.domain.user.model.User;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,15 +11,16 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class UserPrincipal implements UserDetails {
-	private User user;
+	private final User user;
 
 	public UserPrincipal(User user) {
 		this.user = user;
 	}
 
 	@Override
+	@NonNull
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Collections.singletonList(new SimpleGrantedAuthority("USER"));
+		return Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()));
 	}
 
 	@Override
@@ -27,6 +29,7 @@ public class UserPrincipal implements UserDetails {
 	}
 
 	@Override
+	@NonNull
 	public String getUsername() {
 		return user.getUsername();
 	}
@@ -38,7 +41,7 @@ public class UserPrincipal implements UserDetails {
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return true;
+		return !user.isBanned();
 	}
 
 	@Override

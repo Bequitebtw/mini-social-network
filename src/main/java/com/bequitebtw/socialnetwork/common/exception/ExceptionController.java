@@ -40,7 +40,7 @@ public class ExceptionController {
 		return responseBuilder.notFound(ex.getMessage(), request.getRequestURI());
 	}
 
-
+	//others
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex, HttpServletRequest request) {
 		return responseBuilder.serverError(ex.getMessage(), request.getRequestURI());

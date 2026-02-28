@@ -24,8 +24,10 @@ public class User {
 	private String email;
 	@Column(name = "password", nullable = false)
 	private String password;
+	@Column
+	boolean isBanned = false;
 	@Column(name = "created_at", nullable = false)
 	private LocalDateTime createdAt = LocalDateTime.now();
 	@Enumerated(EnumType.STRING)
-	private UserRole role = UserRole.USER;
+	private Role role = Role.USER;
 }

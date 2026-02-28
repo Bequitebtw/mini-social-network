@@ -6,11 +6,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 
+import java.net.URI;
 import java.util.List;
 
 @Component
 public class ResponseBuilder {
 	//Ok
+	public <T> ResponseEntity<ApiResponse<T>> success(HttpStatus status, T data, String message, String instance, URI location) {
+		return ResponseEntity
+				.status(status)
+				.location(location)
+				.body(ApiResponse.success(data, message, instance));
+	}
+
 	public <T> ResponseEntity<ApiResponse<T>> success(HttpStatus status, T data, String message, String instance) {
 		return ResponseEntity
 				.status(status)
