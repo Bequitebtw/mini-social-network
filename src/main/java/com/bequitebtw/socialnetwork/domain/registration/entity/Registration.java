@@ -11,9 +11,9 @@ import java.util.UUID;
 @Entity
 @Setter
 @Getter
-@Table(name = "user_registrations")
+@Table(name = "registrations")
 @NoArgsConstructor
-public class UserRegistration {
+public class Registration {
 	@Id
 	@GeneratedValue
 	private UUID id;

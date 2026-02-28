@@ -32,12 +32,17 @@ public class ExceptionController {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ApiResponse<Void>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request) {
-		return responseBuilder.error(HttpStatus.BAD_REQUEST,ex, request.getRequestURI());
+		return responseBuilder.error(HttpStatus.BAD_REQUEST, ex, request.getRequestURI());
 	}
 
 	@ExceptionHandler(RegistrationRequestNotFoundException.class)
 	public ResponseEntity<ApiResponse<Void>> handleRegistrationRequestNotFoundException(RegistrationRequestNotFoundException ex, HttpServletRequest request) {
 		return responseBuilder.notFound(ex.getMessage(), request.getRequestURI());
+	}
+
+	@ExceptionHandler(BadCredentialsAuthenticationException.class)
+	public ResponseEntity<ApiResponse<Void>> handleBadCredentialsAuthenticationException(BadCredentialsAuthenticationException ex, HttpServletRequest request) {
+		return responseBuilder.unauthorized(ex.getMessage(), request.getRequestURI());
 	}
 
 	//others

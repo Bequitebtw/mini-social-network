@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 @Valid
-public record UserRegistrationDto(
+public record RegistrationRequest(
 		@NotNull
 		@NotBlank
 		String username,

@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +19,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User save(User user) {
 		return userRepository.save(user);
+	}
+
+	@Override
+	public User findUserById(UUID id) {
+		return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 	}
 
 	@Override

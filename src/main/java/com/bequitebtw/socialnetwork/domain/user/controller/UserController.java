@@ -2,6 +2,7 @@ package com.bequitebtw.socialnetwork.domain.user.controller;
 
 import com.bequitebtw.socialnetwork.common.ApiResponse;
 import com.bequitebtw.socialnetwork.common.builder.ResponseBuilder;
+import com.bequitebtw.socialnetwork.common.util.JwtUserPrincipal;
 import com.bequitebtw.socialnetwork.domain.user.model.User;
 import com.bequitebtw.socialnetwork.security.UserPrincipal;
 import com.bequitebtw.socialnetwork.domain.user.service.UserService;
@@ -28,7 +29,8 @@ public class UserController {
 	}
 
 	@GetMapping("/profile")
-	public ResponseEntity<ApiResponse<User>> getMyProfile(@AuthenticationPrincipal UserPrincipal userPrincipal, HttpServletRequest request) {
-		return responseBuilder.ok(userService.findUserProfileByUsername(userPrincipal.getUsername()), request.getRequestURI());
+	public ResponseEntity<ApiResponse<User>> getMyProfile(@AuthenticationPrincipal JwtUserPrincipal jwtUserPrincipal, HttpServletRequest request) {
+
+		return responseBuilder.ok(userService.findUserById(jwtUserPrincipal.getId()), request.getRequestURI());
 	}
 }

@@ -1,6 +1,7 @@
 package com.bequitebtw.socialnetwork.domain.user.repository;
 
 import com.bequitebtw.socialnetwork.domain.user.model.User;
+import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +14,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 	boolean existsByUsername(String username);
 
 	Optional<User> findUserByUsername(String username);
+
+	Optional<User> findUserByUsernameOrEmail(String username,String email);
 }
