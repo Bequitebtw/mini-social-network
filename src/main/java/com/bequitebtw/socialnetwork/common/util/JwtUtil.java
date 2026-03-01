@@ -23,11 +23,10 @@ public class JwtUtil {
 	@Value("${jwt.secret}")
 	private String secret;
 
-	@Value("${jwt.lifetime}")
+	@Value("${jwt.access-lifetime}")
 	private Duration lifetime;
 
-
-	public String generateJwt(UserDetails userDetails) {
+	public String generateAccessJwt(UserDetails userDetails) {
 		if (!(userDetails instanceof UserPrincipal principal)) {
 			throw new IllegalArgumentException("Ожидается UserPrincipal.Class");
 		}
@@ -37,7 +36,6 @@ public class JwtUtil {
 		Date expiredDate = new Date(issuedDate.getTime() + lifetime.toMillis());
 		List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 		claims.put("roles", roles);
-		log.info(roles.toString());
 
 		return Jwts.builder()
 				.claims(claims)
@@ -61,13 +59,13 @@ public class JwtUtil {
 		return getClaims(token).get("roles", List.class);
 	}
 
-	private Date getExpiration(String token) {
-		return getClaim(token, Claims::getExpiration);
-	}
+//	private Date getExpiration(String token) {
+//		return getClaim(token, Claims::getExpiration);
+//	}
 
 	private <T> T getClaim(String token, Function<Claims, T> claimsResolvers) {
 		Claims claims = getClaims(token);
-		log.info(claims.toString());
+		log.debug(claims.toString());
 		return claimsResolvers.apply(claims);
 	}
 

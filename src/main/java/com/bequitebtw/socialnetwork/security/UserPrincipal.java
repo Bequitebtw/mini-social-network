@@ -1,8 +1,7 @@
 package com.bequitebtw.socialnetwork.security;
 
-import com.bequitebtw.socialnetwork.domain.user.model.User;
+import com.bequitebtw.socialnetwork.user.model.User;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;

@@ -1,5 +1,6 @@
 package com.bequitebtw.socialnetwork.config;
 
+import com.bequitebtw.socialnetwork.config.filter.JwtRequestFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity(securedEnabled = true)
+
 public class SecurityConfig {
 	private final JwtRequestFilter jwtRequestFilter;
 
@@ -35,7 +37,12 @@ public class SecurityConfig {
 				.httpBasic(AbstractHttpConfigurer::disable)
 				.formLogin(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/api/auth/**", "/login").permitAll()
+						.requestMatchers(
+								"/api/auth/**")
+//								"/api/auth/registration",
+//								"/api/auth/confirm",
+//								"/api/auth/*/resend")
+						.permitAll()
 						.anyRequest().authenticated())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)

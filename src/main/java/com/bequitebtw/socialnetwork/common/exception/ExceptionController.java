@@ -45,6 +45,14 @@ public class ExceptionController {
 		return responseBuilder.unauthorized(ex.getMessage(), request.getRequestURI());
 	}
 
+	@ExceptionHandler(TokenNotFoundException.class)
+	public ResponseEntity<ApiResponse<Void>> handleRefreshTokenNotFoundException(TokenNotFoundException ex, HttpServletRequest request) {
+		return responseBuilder.notFound(ex.getMessage(), request.getRequestURI());
+	}
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<ApiResponse<Void>> handleUserNotFoundException(UserNotFoundException ex, HttpServletRequest request) {
+		return responseBuilder.notFound(ex.getMessage(), request.getRequestURI());
+	}
 	//others
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex, HttpServletRequest request) {
