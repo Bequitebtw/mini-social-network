@@ -1,5 +1,7 @@
 package com.bequitebtw.socialnetwork.auth.service;
 
+import com.bequitebtw.socialnetwork.auth.dto.AccessTokenResponse;
+import com.bequitebtw.socialnetwork.auth.mapper.RefreshTokenMapper;
 import com.bequitebtw.socialnetwork.common.exception.BadCredentialsAuthenticationException;
 import com.bequitebtw.socialnetwork.common.exception.UserNotFoundException;
 import com.bequitebtw.socialnetwork.common.util.JwtUserPrincipal;
@@ -32,6 +34,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	private final RefreshTokenService refreshTokenService;
 	private final TokenGenerator tokenGenerator;
 	private final UserRepository userRepository;
+	private final RefreshTokenMapper refreshTokenMapper;
 
 	@Value("${jwt.refresh-lifetime}")
 	private Duration refreshTime;
@@ -42,14 +45,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.login(), request.password()));
 			UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 			User user = userRepository.findById(userPrincipal.getId()).orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
+
 			String accessJwt = jwtUtil.generateAccessJwt(userPrincipal);
 			String refreshJwt = tokenGenerator.generate();
+
 			while (refreshTokenService.existByToken(refreshJwt)) {
 				refreshJwt = tokenGenerator.generate();
 			}
 			RefreshToken refreshToken = new RefreshToken(user, Instant.now().plus(refreshTime), refreshJwt);
 			refreshTokenService.save(refreshToken);
-			return new AuthenticationResponse(accessJwt, refreshJwt);
+			return new AuthenticationResponse(new AccessTokenResponse(accessJwt), refreshTokenMapper.toResponse(refreshToken));
 		} catch (BadCredentialsException ex) {
 			throw new BadCredentialsAuthenticationException();
 		}
@@ -59,5 +64,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	public void logout(JwtUserPrincipal jwtUserPrincipal) {
 		User user = userRepository.findById(jwtUserPrincipal.getId()).orElseThrow(() -> new UserNotFoundException(jwtUserPrincipal.getId()));
 		refreshTokenService.deleteByUser(user);
+	}
+
+	@Override
+	public AuthenticationResponse refreshToken(String refreshToken) {
+		return null;
 	}
 }

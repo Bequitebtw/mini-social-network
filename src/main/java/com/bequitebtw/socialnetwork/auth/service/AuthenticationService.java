@@ -9,4 +9,6 @@ public interface AuthenticationService {
 	AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest);
 
 	void logout(JwtUserPrincipal jwtUserPrincipal);
+
+	AuthenticationResponse refreshToken(String refreshToken);
 }

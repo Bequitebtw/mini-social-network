@@ -19,21 +19,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
 	private final UserService userService;
-	private final ResponseBuilder responseBuilder;
 
 
 	@GetMapping("/{username}/profile")
 	public ResponseEntity<ApiResponse<UserShort>> getUserProfile(@PathVariable String username, HttpServletRequest request) {
-		return responseBuilder.ok(userService.findUserByUsername(username), request.getRequestURI());
+		UserShort user = userService.findUserByUsername(username);
+		return ResponseBuilder.ok()
+				.data(user)
+				.instance(request.getRequestURI())
+				.build();
 	}
 
 	@GetMapping("/profile")
 	public ResponseEntity<ApiResponse<UserShort>> getMyProfile(@AuthenticationPrincipal JwtUserPrincipal jwtUserPrincipal, HttpServletRequest request) {
-		return responseBuilder.ok(userService.findUserById(jwtUserPrincipal.getId()), request.getRequestURI());
+		UserShort user = userService.findUserById(jwtUserPrincipal.getId());
+		return ResponseBuilder.ok().data(user).instance(request.getRequestURI()).build();
 	}
 
 	@GetMapping("/test")
-	public ResponseEntity<String> test() {
-		return ResponseEntity.ok("Ваш токен работает!!!");
+	public ResponseEntity<ApiResponse<String>> test(HttpServletRequest request) {
+		return ResponseBuilder.ok().message("Ваш токен работает успешно!").instance(request.getRequestURI()).build();
 	}
 }
