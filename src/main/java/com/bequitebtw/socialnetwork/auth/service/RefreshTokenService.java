@@ -12,4 +12,6 @@ public interface RefreshTokenService {
 	boolean existByToken(String token);
 
 	void deleteByUser(User user);
+
+	void deleteByToken(String token);
 }

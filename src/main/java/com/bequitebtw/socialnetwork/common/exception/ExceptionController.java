@@ -5,6 +5,7 @@ import com.bequitebtw.socialnetwork.common.builder.ResponseBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -42,6 +43,15 @@ public class ExceptionController {
 				.build();
 	}
 
+	@ExceptionHandler(ExpiredRefreshTokenException.class)
+	public ResponseEntity<ApiResponse<Void>> handleExpiredRefreshTokenException(ExpiredRefreshTokenException ex, HttpServletRequest request) {
+		return ResponseBuilder
+				.unauthorized()
+				.message(ex.getMessage())
+				.instance(request.getRequestURI())
+				.build();
+	}
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ApiResponse<Void>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request) {
 		List<String> errors = ex.getBindingResult()
@@ -66,8 +76,8 @@ public class ExceptionController {
 				.build();
 	}
 
-	@ExceptionHandler(BadCredentialsAuthenticationException.class)
-	public ResponseEntity<ApiResponse<Void>> handleBadCredentialsAuthenticationException(BadCredentialsAuthenticationException ex, HttpServletRequest request) {
+	@ExceptionHandler(LoginNotFoundException.class)
+	public ResponseEntity<ApiResponse<Void>> handleLoginNotFoundException(LoginNotFoundException ex, HttpServletRequest request) {
 		return ResponseBuilder
 				.unauthorized()
 				.message(ex.getMessage())
@@ -93,6 +103,14 @@ public class ExceptionController {
 				.build();
 	}
 
+	@ExceptionHandler(BadCredentialsException.class)
+	public ResponseEntity<ApiResponse<Void>> handleBadCredentialsException(BadCredentialsException ex, HttpServletRequest request) {
+		return ResponseBuilder
+				.unauthorized()
+				.message(ex.getMessage())
+				.instance(request.getRequestURI())
+				.build();
+	}
 	//others
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex, HttpServletRequest request) {

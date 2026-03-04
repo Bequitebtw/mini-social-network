@@ -34,4 +34,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 	public void deleteByUser(User user) {
 		refreshTokenRepository.deleteByUser(user);
 	}
+
+	@Override
+	public void deleteByToken(String token) {
+		refreshTokenRepository.deleteByToken(token);
+	}
 }

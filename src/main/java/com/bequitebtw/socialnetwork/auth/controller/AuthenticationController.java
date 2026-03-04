@@ -31,7 +31,7 @@ public class AuthenticationController {
 
 	@PostMapping("/login")
 	public ResponseEntity<ApiResponse<AccessTokenResponse>> login(@Valid @RequestBody AuthenticationRequest authenticationRequest, HttpServletRequest request) throws Exception {
-		log.info("Запрос на вход под логином: {}", authenticationRequest.login());
+		log.info("Login request from: {}", authenticationRequest.login());
 		AuthenticationResponse authenticationResponse = authenticationService.authenticate(authenticationRequest);
 		RefreshTokenResponse refreshToken = authenticationResponse.refreshTokenResponse();
 		ResponseCookie responseCookie = refreshTokenCookieFactory.create(refreshToken);
@@ -46,17 +46,22 @@ public class AuthenticationController {
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/logout")
 	public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal JwtUserPrincipal jwtUserPrincipal) {
+		log.info("Logout request from: {}", jwtUserPrincipal.getUsername());
 		ResponseCookie responseCookie = refreshTokenCookieFactory.delete();
 		authenticationService.logout(jwtUserPrincipal);
 		return ResponseBuilder.ok().cookie(responseCookie).build();
 	}
 
 	@PostMapping("/refresh")
-	public ResponseEntity<ApiResponse<Void>> refresh(HttpServletRequest request) {
-		///  проверка что токен валидный дописать и выслать новый refresh и jwt
-//		request.getCookies()
-//		authenticationService.refreshToken()
-		ResponseCookie responseCookie = refreshTokenCookieFactory.delete();
-		return ResponseBuilder.ok().cookie(responseCookie).build();
+	public ResponseEntity<ApiResponse<Void>> refresh(@CookieValue("refresh_token") String refreshToken, HttpServletRequest request) {
+		log.info("Refresh token request");
+		AuthenticationResponse authenticationResponse = authenticationService.refreshToken(refreshToken);
+		RefreshTokenResponse token = authenticationResponse.refreshTokenResponse();
+		ResponseCookie responseCookie = refreshTokenCookieFactory.create(token);
+		return ResponseBuilder.ok()
+				.cookie(responseCookie)
+				.data(authenticationResponse.accessTokenResponse())
+				.instance(request.getRequestURI())
+				.build();
 	}
 }

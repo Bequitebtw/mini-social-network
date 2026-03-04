@@ -1,6 +1,6 @@
 package com.bequitebtw.socialnetwork.security;
 
-import com.bequitebtw.socialnetwork.common.exception.BadCredentialsAuthenticationException;
+import com.bequitebtw.socialnetwork.common.exception.LoginNotFoundException;
 import com.bequitebtw.socialnetwork.user.model.User;
 import com.bequitebtw.socialnetwork.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -22,8 +22,7 @@ public class MyUserDetailService implements UserDetailsService {
 	@NonNull
 	@Transactional
 	public UserDetails loadUserByUsername(@NonNull String login) throws UsernameNotFoundException {
-		log.info("Попытка найти пользователя {} в базе для авторизации", login);
-		User user = userRepository.findUserByUsernameOrEmail(login, login).orElseThrow(BadCredentialsAuthenticationException::new);
+		User user = userRepository.findUserByUsernameIgnoreCaseOrEmailIgnoreCase(login, login).orElseThrow(() -> new LoginNotFoundException(login));
 		return new UserPrincipal(user);
 	}
 }

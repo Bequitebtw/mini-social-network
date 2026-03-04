@@ -11,12 +11,14 @@ import com.bequitebtw.socialnetwork.security.TokenGenerator;
 import com.bequitebtw.socialnetwork.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -31,17 +33,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Override
 	public RegistrationResponse createRegistrationRequest(RegistrationRequest dto) {
 		if (userService.existsByEmail(dto.email())) {
+			log.warn("Registration failed for email={}", dto.email());
 			throw new ExistEmailException(dto.email());
 		}
 		if (userService.existsByUsername(dto.username())) {
+			log.warn("Registration failed for username={}", dto.username());
 			throw new ExistUsernameException(dto.username());
 		}
 
-		Registration request = registrationRepository.findByEmail(dto.email())
+		Registration request = registrationRepository.findByEmailIgnoreCase(dto.email())
 				.orElseGet(() -> registrationMapper.toEntity(dto));
 
 		request.updateCredentials(
-				dto.username(),
+				dto.username().toLowerCase(),
 				passwordEncoder.encode(dto.password())
 		);
 
@@ -51,6 +55,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 		request.setToken(token);
 		registrationRepository.save(request);
+		log.info("Registration request for email {} and username {} created successfully", request.getEmail(), request.getUsername());
 		notifier.sendVerificationToken(request.getEmail(), token);
 		return registrationMapper.toResponse(request);
 	}
@@ -59,17 +64,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 	public RegistrationResponse confirmAccount(String token) {
 		Registration request = registrationRepository.findByToken(token).orElseThrow(TokenNotFoundException::new);
 		if (userService.existsByEmail(request.getEmail())) {
+			log.warn("Confirm failed for email={}", request.getEmail());
 			throw new ExistEmailException(request.getEmail());
 		}
 		if (userService.existsByUsername(request.getUsername())) {
+			log.warn("Confirm failed for username={}", request.getUsername());
 			throw new ExistUsernameException(request.getUsername());
 		}
 		if (request.isExpired()) {
+			log.warn("Confirm failed for because token {} is expired", request.getToken());
 			throw new ExpiredRequestException();
 		}
 		userService.createUser(request.getEmail(), request.getUsername(), request.getPassword());
 		registrationRepository.delete(request);
-
 		return registrationMapper.toResponse(request);
 	}
 
@@ -81,7 +88,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 		while (registrationRepository.existsByToken(token)) {
 			token = tokenGenerator.generate();
 		}
-
 		request.refreshToken(token);
 		notifier.sendVerificationToken(request.getEmail(), token);
 		return registrationMapper.toResponse(registrationRepository.save(request));

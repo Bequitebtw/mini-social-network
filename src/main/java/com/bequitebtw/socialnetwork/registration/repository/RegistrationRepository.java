@@ -10,8 +10,10 @@ import java.util.UUID;
 @Repository
 public interface RegistrationRepository extends JpaRepository<Registration, UUID> {
 	Optional<Registration> findByToken(String token);
-	boolean existsByEmail(String email);
+
+	boolean existsByEmailIgnoreCase(String email);
+
 	boolean existsByToken(String token);
 
-	Optional<Registration> findByEmail(String email);
+	Optional<Registration> findByEmailIgnoreCase(String email);
 }

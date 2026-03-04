@@ -30,7 +30,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
-		log.info("jwt filter {}", request);
 		String authHeader = request.getHeader("Authorization");
 		String username = null;
 		UUID id = null;
@@ -43,14 +42,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				id = UUID.fromString(jwtUtil.getId(jwt));
 				roles = jwtUtil.getRoles(jwt);
 			} catch (ExpiredJwtException | SignatureException exception) {
-				log.info("EXPIRED OR NOT CORRECT SIGNED JWT");
+				log.warn("EXPIRED OR NOT CORRECT SIGNED JWT");
 			}
 		}
 
 		if (username != null && id != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			List<SimpleGrantedAuthority> grantedAuthorities = roles.stream().map(SimpleGrantedAuthority::new).toList();
 			JwtUserPrincipal principal = new JwtUserPrincipal(username, id, roles);
-			log.info("jwt principal: {}", principal);
 			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 					principal,
 					null,

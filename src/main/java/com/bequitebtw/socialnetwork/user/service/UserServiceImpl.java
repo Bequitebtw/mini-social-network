@@ -7,6 +7,7 @@ import com.bequitebtw.socialnetwork.user.model.User;
 import com.bequitebtw.socialnetwork.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @Transactional
 public class UserServiceImpl implements UserService {
@@ -21,14 +23,8 @@ public class UserServiceImpl implements UserService {
 	private final UserMapper userMapper;
 
 	@Override
-	public UserShort save(User user) {
-		return userMapper.toShort(userRepository.save(user));
-	}
-
-	@Override
 	public UserShort findUserById(UUID id) {
 		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-		System.out.println(user.getEmail());
 		return userMapper.toShort(user);
 	}
 
@@ -38,22 +34,24 @@ public class UserServiceImpl implements UserService {
 		user.setEmail(email);
 		user.setUsername(username);
 		user.setPassword(passwordHash);
-		return userMapper.toShort(userRepository.save(user));
+		User createdUser = userRepository.save(user);
+		log.info("Account with email {} and username {} created successfully", createdUser.getEmail(), createdUser.getUsername());
+		return userMapper.toShort(createdUser);
 	}
 
 	@Override
 	public boolean existsByEmail(String email) {
-		return userRepository.existsByEmail(email);
+		return userRepository.existsByEmailIgnoreCase(email);
 	}
 
 	@Override
 	public boolean existsByUsername(String username) {
-		return userRepository.existsByUsername(username);
+		return userRepository.existsByUsernameIgnoreCase(username);
 	}
 
 	@Override
 	public UserShort findUserByUsername(String username) {
-		User user = userRepository.findUserByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+		User user = userRepository.findUserByUsernameIgnoreCase(username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
 		return userMapper.toShort(user);
 	}
 

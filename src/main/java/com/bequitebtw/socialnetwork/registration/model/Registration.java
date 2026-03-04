@@ -40,6 +40,18 @@ public class Registration {
 		return lastResendAt == null || lastResendAt.plusMinutes(1).isBefore(LocalDateTime.now());
 	}
 
+	@Override
+	public String toString() {
+		return "Registration{" +
+				"id=" + id +
+				", username='" + username + '\'' +
+				", email='" + email + '\'' +
+				", password='" + password + '\'' +
+				", token='" + token + '\'' +
+				", expiresAt=" + expiresAt +
+				", lastResendAt=" + lastResendAt +
+				'}';
+	}
 
 	public boolean isExpired() {
 		return LocalDateTime.now().isAfter(expiresAt);

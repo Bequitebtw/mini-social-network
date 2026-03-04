@@ -6,7 +6,6 @@ import com.bequitebtw.socialnetwork.user.model.User;
 import java.util.UUID;
 
 public interface UserService {
-	UserShort save(User user);
 
 	UserShort findUserById(UUID id);
 

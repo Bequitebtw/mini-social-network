@@ -4,11 +4,13 @@ package com.bequitebtw.socialnetwork.notification;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailNotifier implements Notifier {
@@ -42,6 +44,7 @@ public class EmailNotifier implements Notifier {
 			helper.setText(htmlContent, true);
 
 			mailSender.send(message);
+			log.info("Message with account confirmation sent to {}", to);
 		} catch (MessagingException e) {
 			throw new IllegalStateException("Failed to send email", e);
 		}

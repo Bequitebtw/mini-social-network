@@ -24,7 +24,7 @@ public class RegistrationController {
 
 	@PostMapping("/registration")
 	public ResponseEntity<ApiResponse<RegistrationResponse>> createRegistrationRequest(@RequestBody @Valid RegistrationRequest registrationRequest, HttpServletRequest request) {
-		log.info("Запрос на регистрацию username: {},email: {}", registrationRequest.username(), registrationRequest.email());
+		log.info("Registration request with username: {} and email: {}", registrationRequest.username(), registrationRequest.email());
 		RegistrationResponse registrationResponse = registrationService.createRegistrationRequest(registrationRequest);
 
 		return ResponseBuilder.created()
@@ -36,7 +36,7 @@ public class RegistrationController {
 
 	@GetMapping("/confirm")
 	public ResponseEntity<ApiResponse<RegistrationResponse>> confirmAccount(@RequestParam("token") String tokenValue, HttpServletRequest request) {
-		log.info("Заявка на подтверждение токена: {}", tokenValue);
+		log.info("Confirm account request with token: {}", tokenValue);
 		RegistrationResponse registrationResponse = registrationService.confirmAccount(tokenValue);
 
 		return ResponseBuilder.found()
@@ -49,7 +49,7 @@ public class RegistrationController {
 
 	@PostMapping("/{registrationId}/resend")
 	public ResponseEntity<ApiResponse<RegistrationResponse>> resendToken(@PathVariable UUID registrationId, HttpServletRequest request) {
-		log.info("Пользователь {} отправил повторный запрос на отправку токена", registrationId);
+		log.info("User with id: {} send repeated request to confirm account", registrationId);
 		RegistrationResponse registrationResponse = registrationService.resendToken(registrationId);
 		return ResponseBuilder.found()
 				.data(registrationResponse)
