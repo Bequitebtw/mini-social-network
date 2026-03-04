@@ -1,47 +1,39 @@
-package com.bequitebtw.socialnetwork.security;
+package com.bequitebtw.socialnetwork.common.util;
 
-import com.bequitebtw.socialnetwork.user.model.User;
 import lombok.Getter;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
-public class UserPrincipal implements UserDetails {
-	@Getter
+@Getter
+public class JwtUserPrincipal implements UserDetails {
 	private final UUID id;
 	private final String username;
-	private final String password;
-	private final String role;
-	private final boolean banned;
+	private final List<String> roles;
 
-	public UserPrincipal(User user) {
-		this.id = user.getId();
-		this.username = user.getUsername();
-		this.password = user.getPassword();
-		this.role = user.getRole().name();
-		this.banned = user.isBanned();
+	public JwtUserPrincipal(String username, UUID id, List<String> roles) {
+		this.username = username;
+		this.id = id;
+		this.roles = roles;
 	}
 
 	@Override
-	@NonNull
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Collections.singletonList(new SimpleGrantedAuthority(this.role));
+		return this.roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 	}
 
 	@Override
-	public @Nullable String getPassword() {
-		return this.password;
+	public String getPassword() {
+		return null;
 	}
 
 	@Override
-	@NonNull
 	public String getUsername() {
 		return this.username;
 	}
@@ -53,7 +45,7 @@ public class UserPrincipal implements UserDetails {
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return !this.banned;
+		return true;
 	}
 
 	@Override
