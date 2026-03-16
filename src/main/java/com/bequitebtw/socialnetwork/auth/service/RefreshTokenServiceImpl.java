@@ -13,30 +13,36 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Transactional
 public class RefreshTokenServiceImpl implements RefreshTokenService {
-	private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-	@Override
-	public RefreshToken save(RefreshToken refreshToken) {
-		return refreshTokenRepository.save(refreshToken);
-	}
+    @Override
+    public RefreshToken save(RefreshToken refreshToken) {
+        return refreshTokenRepository.save(refreshToken);
+    }
 
-	@Override
-	public RefreshToken findByToken(String token) {
-		return refreshTokenRepository.findByToken(token).orElseThrow(TokenNotFoundException::new);
-	}
+    @Override
+    public RefreshToken findByToken(String token) {
+        return refreshTokenRepository.findByToken(token).orElseThrow(TokenNotFoundException::new);
+    }
 
-	@Override
-	public boolean existByToken(String token) {
-		return refreshTokenRepository.existsByToken(token);
-	}
 
-	@Override
-	public void deleteByUser(User user) {
-		refreshTokenRepository.deleteByUser(user);
-	}
+    @Override
+    public boolean existByToken(String token) {
+        return refreshTokenRepository.existsByToken(token);
+    }
 
-	@Override
-	public void deleteByToken(String token) {
-		refreshTokenRepository.deleteByToken(token);
-	}
+    @Override
+    public void deleteByUser(User user) {
+        refreshTokenRepository.deleteByUser(user);
+    }
+
+    @Override
+    public void deleteByToken(String token) {
+        refreshTokenRepository.deleteByToken(token);
+    }
+
+    @Override
+    public boolean existsByUser(User user) {
+        return refreshTokenRepository.existsByUser(user);
+    }
 }

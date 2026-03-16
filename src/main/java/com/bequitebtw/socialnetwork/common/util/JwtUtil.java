@@ -1,10 +1,12 @@
 package com.bequitebtw.socialnetwork.common.util;
 
+import com.bequitebtw.socialnetwork.security.TokenGenerator;
 import com.bequitebtw.socialnetwork.security.UserPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,65 +20,72 @@ import java.util.function.Function;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class JwtUtil {
 
-	@Value("${jwt.secret}")
-	private String secret;
+    @Value("${jwt.secret}")
+    private String secret;
 
-	@Value("${jwt.access-lifetime}")
-	private Duration lifetime;
+    private final TokenGenerator tokenGenerator;
 
-	public String generateAccessJwt(UserDetails userDetails) {
-		if (!(userDetails instanceof UserPrincipal principal)) {
-			throw new IllegalArgumentException("Ожидается UserPrincipal.Class");
-		}
+    @Value("${jwt.access-lifetime}")
+    private Duration lifetime;
 
-		Map<String, Object> claims = new HashMap<>();
-		Date issuedDate = new Date();
-		Date expiredDate = new Date(issuedDate.getTime() + lifetime.toMillis());
-		List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-		claims.put("roles", roles);
+    public String generateAccessJwt(UserDetails userDetails) {
+        if (!(userDetails instanceof UserPrincipal principal)) {
+            throw new IllegalArgumentException("Ожидается UserPrincipal.Class");
+        }
 
-		return Jwts.builder()
-				.claims(claims)
-				.id(principal.getId().toString())
-				.subject(userDetails.getUsername())
-				.issuedAt(issuedDate)
-				.expiration(expiredDate)
-				.signWith(getSigningKey()).compact();
-	}
+        Map<String, Object> claims = new HashMap<>();
+        Date issuedDate = new Date();
+        Date expiredDate = new Date(issuedDate.getTime() + lifetime.toMillis());
+        List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        claims.put("roles", roles);
 
-	public String getId(String token) {
-		return getClaim(token, Claims::getId);
-	}
+        return Jwts.builder()
+                .claims(claims)
+                .id(principal.getId().toString())
+                .subject(userDetails.getUsername())
+                .issuedAt(issuedDate)
+                .expiration(expiredDate)
+                .signWith(getSigningKey()).compact();
+    }
 
-	public String getUsername(String token) {
-		return getClaim(token, Claims::getSubject);
-	}
+    public String getId(String token) {
+        return getClaim(token, Claims::getId);
+    }
 
-	@SuppressWarnings("unchecked")
-	public List<String> getRoles(String token) {
-		return getClaims(token).get("roles", List.class);
-	}
+    public String generateRefreshJwt() {
+        return tokenGenerator.generate();
+    }
+
+    public String getUsername(String token) {
+        return getClaim(token, Claims::getSubject);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<String> getRoles(String token) {
+        return getClaims(token).get("roles", List.class);
+    }
 
 //	private Date getExpiration(String token) {
 //		return getClaim(token, Claims::getExpiration);
 //	}
 
-	private <T> T getClaim(String token, Function<Claims, T> claimsResolvers) {
-		Claims claims = getClaims(token);
-		log.debug(claims.toString());
-		return claimsResolvers.apply(claims);
-	}
+    private <T> T getClaim(String token, Function<Claims, T> claimsResolvers) {
+        Claims claims = getClaims(token);
+        log.debug(claims.toString());
+        return claimsResolvers.apply(claims);
+    }
 
-	private Claims getClaims(String token) {
-		return Jwts.parser()
-				.verifyWith(getSigningKey())
-				.build().parseSignedClaims(token).getPayload();
-	}
+    private Claims getClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build().parseSignedClaims(token).getPayload();
+    }
 
-	private SecretKey getSigningKey() {
-		byte[] keyBytes = Decoders.BASE64.decode(secret);
-		return Keys.hmacShaKeyFor(keyBytes);
-	}
+    private SecretKey getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
 }

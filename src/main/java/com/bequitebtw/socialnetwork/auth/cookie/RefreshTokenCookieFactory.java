@@ -1,7 +1,6 @@
 package com.bequitebtw.socialnetwork.auth.cookie;
 
 import com.bequitebtw.socialnetwork.auth.dto.RefreshTokenResponse;
-import com.bequitebtw.socialnetwork.auth.model.RefreshToken;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 

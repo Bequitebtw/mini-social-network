@@ -21,22 +21,22 @@ public class DataLoader implements CommandLineRunner {
 
 	@Override
 	public void run(String @NonNull ... args) throws Exception {
-		User user1 = User.builder()
-				.username("4444")
-				.password(passwordEncoder.encode("123123"))
-				.email("bequitebtw@mail.ru")
-				.createdAt(LocalDateTime.now())
-				.role(Role.USER).isBanned(false).build();
-		User user2 = User.builder()
-				.username("1111")
-				.password(passwordEncoder.encode("123123"))
-				.email("gavrilovdts@gmail.com")
-				.createdAt(LocalDateTime.now())
-				.role(Role.USER).isBanned(false).build();
-
-		System.out.printf("user1: %s\n", user1);
-		System.out.printf("user2: %s\n", user2);
-		userRepository.save(user1);
-		userRepository.save(user2);
+//		User user1 = User.builder()
+//				.username("4444")
+//				.password(passwordEncoder.encode("123123"))
+//				.email("bequitebtw@mail.ru")
+//				.createdAt(LocalDateTime.now())
+//				.role(Role.USER).isBanned(false).build();
+//		User user2 = User.builder()
+//				.username("1111")
+//				.password(passwordEncoder.encode("123123"))
+//				.email("gavrilovdts@gmail.com")
+//				.createdAt(LocalDateTime.now())
+//				.role(Role.USER).isBanned(false).build();
+//
+//		System.out.printf("user1: %s\n", user1);
+//		System.out.printf("user2: %s\n", user2);
+//		userRepository.save(user1);
+//		userRepository.save(user2);
 	}
 }

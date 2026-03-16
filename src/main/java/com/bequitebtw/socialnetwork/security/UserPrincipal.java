@@ -17,14 +17,20 @@ public class UserPrincipal implements UserDetails {
 	@Getter
 	private final UUID id;
 	private final String username;
-	private final String password;
+	private String password;
 	private final String role;
 	private final boolean banned;
 
 	public UserPrincipal(User user) {
 		this.id = user.getId();
 		this.username = user.getUsername();
-		this.password = user.getPassword();
+		this.role = user.getRole().name();
+		this.banned = user.isBanned();
+	}
+	public UserPrincipal(User user,String password) {
+		this.id = user.getId();
+		this.username = user.getUsername();
+		this.password = password;
 		this.role = user.getRole().name();
 		this.banned = user.isBanned();
 	}
@@ -64,5 +70,16 @@ public class UserPrincipal implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "UserPrincipal{" +
+				"id=" + id +
+				", username='" + username + '\'' +
+				", password='" + password + '\'' +
+				", role='" + role + '\'' +
+				", banned=" + banned +
+				'}';
 	}
 }
