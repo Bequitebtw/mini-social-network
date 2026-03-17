@@ -1,0 +1,58 @@
+package com.bequitebtw.socialnetwork.registration.controller;
+
+import com.bequitebtw.socialnetwork.common.ApiResponse;
+import com.bequitebtw.socialnetwork.common.builder.ResponseBuilder;
+import com.bequitebtw.socialnetwork.registration.dto.RegistrationRequest;
+import com.bequitebtw.socialnetwork.registration.dto.RegistrationResponse;
+import com.bequitebtw.socialnetwork.registration.service.RegistrationService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
+
+@RestController
+@RequiredArgsConstructor
+@Slf4j
+@RequestMapping("/api/auth")
+public class RegistrationController {
+	private final RegistrationService registrationService;
+
+	@PostMapping("/registration")
+	public ResponseEntity<ApiResponse<RegistrationResponse>> createRegistrationRequest(@RequestBody @Valid RegistrationRequest registrationRequest, HttpServletRequest request) {
+		log.info("Registration request with username: {} and email: {}", registrationRequest.username(), registrationRequest.email());
+		RegistrationResponse registrationResponse = registrationService.createRegistrationRequest(registrationRequest);
+
+		return ResponseBuilder.created()
+				.data(registrationResponse)
+				.message("Подтверждение отправлено на вашу почту.")
+				.instance(request.getRequestURI())
+				.build();
+	}
+
+	@GetMapping("/confirm")
+	public ResponseEntity<ApiResponse<RegistrationResponse>> confirmAccount(@RequestParam("token") String tokenValue, HttpServletRequest request) {
+		log.info("Confirm account request with token: {}", tokenValue);
+		RegistrationResponse registrationResponse = registrationService.confirmAccount(tokenValue);
+
+		return ResponseBuilder.ok()
+				.data(registrationResponse)
+				.message("Аккаунт подтвержден.")
+				.instance(request.getRequestURI())
+				.build();
+	}
+
+	@PostMapping("/{registrationId}/resend")
+	public ResponseEntity<ApiResponse<RegistrationResponse>> resendToken(@PathVariable UUID registrationId, HttpServletRequest request) {
+		log.info("User with id: {} send repeated request to confirm account", registrationId);
+		RegistrationResponse registrationResponse = registrationService.resendToken(registrationId);
+		return ResponseBuilder.ok()
+				.data(registrationResponse)
+				.message("Повторное письмо отправлено на вашу почту.")
+				.instance(request.getRequestURI())
+				.build();
+	}
+}

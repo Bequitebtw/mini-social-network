@@ -1,0 +1,44 @@
+:root {
+  color-scheme: dark;
+  --bg-base: #05070b;
+  --bg-accent: #0b1020;
+  --surface: rgba(11, 16, 32, 0.72);
+  --surface-muted: rgba(15, 23, 42, 0.82);
+  --input-bg: rgba(10, 10, 14, 0.96);
+  --border-soft: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.1);
+  --text-main: #f8fafc;
+  --text-soft: #a1a1aa;
+  --shadow-soft: 0 24px 80px rgba(0, 0, 0, 0.36);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(124, 58, 237, 0.18), transparent 24%),
+    radial-gradient(circle at top right, rgba(37, 99, 235, 0.15), transparent 22%),
+    linear-gradient(180deg, var(--bg-base), var(--bg-accent));
+  color: var(--text-main);
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
